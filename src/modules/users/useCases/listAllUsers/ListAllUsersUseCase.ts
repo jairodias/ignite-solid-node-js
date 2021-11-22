@@ -1,10 +1,20 @@
 import { User } from "../../model/User";
 import { IUsersRepository } from "../../repositories/IUsersRepository";
 
+interface IRequest {
+  user_id: string;
+}
+
 class ListAllUsersUseCase {
   constructor(private usersRepository: IUsersRepository) {}
 
-  execute(): User[] {
+  execute({ user_id }: IRequest): User[] {
+    const userIsAdmin = this.usersRepository.findById(user_id);
+
+    if (!userIsAdmin.admin) {
+      throw new Error("Unauthorized.");
+    }
+
     return this.usersRepository.list();
   }
 }
